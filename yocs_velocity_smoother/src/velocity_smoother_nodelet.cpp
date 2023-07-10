@@ -90,7 +90,8 @@ void VelocitySmoother::velocityCB(const geometry_msgs::Twist::ConstPtr& msg)
   else
   {
     // enough; recalculate with the latest input
-    cb_avg_time = median(period_record);
+    // cb_avg_time = median(period_record);
+    cb_avg_time = average(period_record);
   }
 
   input_active = true;
@@ -136,7 +137,7 @@ void VelocitySmoother::spin()
     locker.unlock();
     
     if ((input_active == true) && (cb_avg_time > 0.0) &&
-        ((ros::Time::now() - last_cb_time).toSec() > std::min(3.0*cb_avg_time, 0.5)))
+        ((ros::Time::now() - last_cb_time).toSec() > std::min(10.0*cb_avg_time, 0.5)))
     {
       // Velocity input no active anymore; normally last command is a zero-velocity one, but reassure
       // this, just in case something went wrong with our input, or he just forgot good manners...
@@ -166,7 +167,7 @@ void VelocitySmoother::spin()
     bool w_different_from_feedback = current_vel.angular.z < w_deviation_lower_bound || current_vel.angular.z > angular_max_deviation;
 
     if ((robot_feedback != NONE) && (input_active == true) && (cb_avg_time > 0.0) &&
-        (((ros::Time::now() - last_cb_time).toSec() > 5.0*cb_avg_time)     || // 5 missing msgs
+        (((ros::Time::now() - last_cb_time).toSec() > 10.0*cb_avg_time)     || // 5 missing msgs
             v_different_from_feedback || w_different_from_feedback))
     {
       // If the publisher has been inactive for a while, or if our current commanding differs a lot

@@ -20,6 +20,7 @@
 #include <ros/ros.h>
 #include <nav_msgs/Odometry.h>
 #include <mutex>
+#include <numeric>
 
 /*****************************************************************************
 ** Namespaces
@@ -89,6 +90,11 @@ private:
     // Return the median element of an doubles vector
     nth_element(values.begin(), values.begin() + values.size()/2, values.end());
     return values[values.size()/2];
+  };
+
+  double average(std::vector<double> values) {
+    // Return the average element of an doubles vector
+    return std::accumulate(values.begin(), values.end(), 0.0) / values.size();;
   };
 
   /*********************
